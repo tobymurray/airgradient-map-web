@@ -1,0 +1,126 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-weight: 400;
+  line-height: 25px;
+  color: $text-color;
+  font-family: $primary-font;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+  font-size: 60px;
+  line-height: 72px;
+  font-weight: bold;
+  font-family: $secondary-font;
+  color: $primary-color;
+}
+
+h2 {
+  font-size: 42px;
+  line-height: 51px;
+  font-weight: 400;
+  color: $primary-color;
+  font-family: $secondary-font;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 32px;
+  line-height: 39px;
+  font-weight: 500;
+  font-family: $secondary-font;
+  color: $text-color;
+  margin-bottom: 36px;
+}
+
+h4 {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-family: $secondary-font;
+  color: $text-color;
+}
+
+h5 {
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 30px;
+  color: $text-color;
+  margin-bottom: 20px;
+  font-family: $secondary-font;
+}
+
+p {
+  font-size: 18px;
+  color: $text-color;
+  line-height: 27px;
+}
+
+p.small {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  font-family: $primary-font;
+}
+
+small {
+  font-size: 14px;
+  color: $text-color;
+  line-height: 21px;
+}
+
+@include mobile {
+  h1 {
+    font-size: 60px;
+    line-height: 72px;
+  }
+
+  h2 {
+    font-size: 42px;
+    line-height: 51px;
+  }
+
+  h3 {
+    font-size: 30px;
+    line-height: normal;
+  }
+
+  h4 {
+    font-size: 21px;
+    line-height: normal;
+  }
+
+  h5 {
+    font-size: 18px;
+    line-height: normal;
+  }
+}
+
+
+.text-grey {
+  color: $dark-grey;
+}
+
+.accent-text {
+  color: $primary-color ;
+}
+
+ul {
+  font-size: 18px;
+  list-style: square;
+  text-align: left;
+}
+
+a,
+a:active,
+a:focus,
+a:active {
+  text-decoration: none;
+}

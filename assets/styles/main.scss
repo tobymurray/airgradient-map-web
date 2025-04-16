@@ -1,0 +1,69 @@
+@use "fonts" as *;
+@use "normalize" as *;
+@use "typography" as *;
+@use "variables" as *;
+@use "buttons" as *;
+@use "transitions" as *;
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.bg-blue {
+    background-color: $primary-color !important;
+    color: white;
+}
+
+.bg-darkblue {
+    background-color: $dark-primary-color;
+    color: white;
+}
+
+.bg-darkblue-gradient {
+    background-image: radial-gradient(circle farthest-corner at 80% 80%, #5fadf8, #1c75bc);
+    color: white;
+}
+
+.bg-lightblue {
+    background-color: $primary-color-light !important;
+}
+
+.bg-lightblue-gradient {
+    background-image: radial-gradient(circle farthest-corner at 80% 80%, #fff, $primary-color-light);
+}
+
+.navbar {
+    &-brand {
+        color: #444;
+        font-size: 25px;
+        margin: 0;
+        line-height: 1;
+    }
+}
+
+.nav-link {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 30px;
+    text-align: left;
+    padding: 10px 16px !important;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: #444;
+}
+
+.lang-list {
+    border: 0;
+    margin: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+@media (min-width: 1400px) {
+    .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+        max-width: 1140px;
+    }
+}

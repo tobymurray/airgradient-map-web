@@ -1,0 +1,56 @@
+{
+  "author": {
+    "name": "AirGradient",
+    "email": "support@airgradient.com",
+    "url": "https://www.airgradient.com/"
+  },
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "build:static": "nuxt generate",
+    "build:capacitor": "NODE_ENV=production NUXT_PUBLIC_MOBILE=true nuxt generate && npx cap sync",
+    "build:ios": "npm run build:capacitor && npx cap open ios",
+    "build:android": "npm run build:capacitor && npx cap open android",
+    "build:dev:android": "NODE_ENV=development NUXT_PUBLIC_MOBILE=true nuxt dev --host & npx cap run android",
+    "build:dev:ios": "NODE_ENV=development NUXT_PUBLIC_MOBILE=true nuxt dev --host & npx cap run ios",
+    "dev": "nuxt dev",
+    "dev:android:hotreload": " nuxt dev & npx cap open android",
+    "dev:ios:hotreload": "nuxt dev & npx cap open ios",
+    "add:ios": "test -d ios || npx cap add ios",
+    "add:android": "test -d ios || npx cap add android",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "format": "prettier --write \"**/*.{js,ts,vue,json}\""
+  },
+  "engines": {
+    "node": ">=19.0.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/core": "^6.2.1",
+    "@capacitor/ios": "^6.2.1",
+    "@maplibre/maplibre-gl-leaflet": "^0.0.22",
+    "@mdi/font": "^7.4.47",
+    "@pinia/nuxt": "^0.10.1",
+    "@types/node": "^22.13.14",
+    "geojson": "^0.5.0",
+    "leaflet": "^1.9.4",
+    "leaflet-geosearch": "^4.2.0",
+    "maplibre-gl": "^4.7.1",
+    "nuxt": "^3.16.1",
+    "pinia": "^3.0.1",
+    "sass": "^1.86.0",
+    "vite-plugin-checker": "^0.9.1",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "vue-tsc": "^2.2.8"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.1",
+    "@nuxtjs/leaflet": "^1.2.6",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "prettier": "^3.5.3",
+    "vite-plugin-vuetify": "^2.1.0",
+    "vuetify": "^3.7.19"
+  }
+}
