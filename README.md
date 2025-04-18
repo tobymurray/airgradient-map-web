@@ -12,6 +12,8 @@ Prerequisites:
 - Docker
 - Docker Compose
 
+Both can be installed from: https://docs.docker.com/compose/install/
+
 1. **Clone the repository**:
 ```bash
 git clone https://github.com/airgradienthq/airgradient-map-web
