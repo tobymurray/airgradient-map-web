@@ -21,7 +21,8 @@ export function convertToGeoJSON(
           sensorsCount: 'sensorsCount' in item ? item.sensorsCount : null,
           value: item.value,
           locationId: 'locationId' in item ? item.locationId : null,
-          locationName: 'locationName' in item ? item.locationName : null
+          locationName: 'locationName' in item ? item.locationName : null,
+          sensorType: 'sensorType' in item ? item.sensorType : null
         },
         geometry: {
           type: 'Point',

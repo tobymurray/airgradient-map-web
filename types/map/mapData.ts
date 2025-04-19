@@ -8,6 +8,7 @@ export interface AGMapData {
 export interface AGMapLocationData extends AGMapDataItem {
   locationId: number
   locationName: string
+  sensorType?: 'Reference' | 'Small Sensor'
 }
 
 export interface AGMapClusterData extends AGMapDataItem {

@@ -67,11 +67,13 @@ function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Mar
   const measurement: number = feature.properties?.value || 0
   const backgroundColor: string = getPM25Color(measurement)
   const isSensor: boolean = feature.properties?.type === 'sensor'
-  
+  const isReference: boolean = feature.properties?.sensorType === 'Reference'
+
   const markerSize = isSensor ? 24 : 36
 
   const icon: DivIcon = L.divIcon({
-    html: `<div class="ag-marker-cluster ${!isSensor ? 'is-cluster' : ''}" style="background-color: ${backgroundColor}">
+    html: `<div class="ag-marker-cluster ${!isSensor ? 'is-cluster' : ''} ${isReference ? 'is-reference' : ''}"
+             style=background-color: ${backgroundColor}">
              <span>${measurement}</span>
            </div>`,
     className: `marker-cluster-outer ${!isSensor ? 'is-cluster-outer' : ''}`,
@@ -79,7 +81,7 @@ function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Mar
   })
 
   const marker = L.marker(latlng, { icon })
-  
+
   if (isSensor && feature.properties) {
     const locationName: string = feature.properties.locationName || 'Unknown Location'
     const tooltipContent = `
@@ -93,7 +95,7 @@ function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Mar
         </div>
       </div>
     `
-    
+
     marker.bindTooltip(tooltipContent, {
       direction: 'top',
       offset: L.point(0, -12),
@@ -106,7 +108,7 @@ function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Mar
     marker.on('click', () => {
       const currentZoom = mapInstance.getZoom()
       const newZoom = Math.min(currentZoom + 2, INITIAL_MAP_VIEW_CONFIG.maxZoom)
-      
+
       mapInstance.flyTo(latlng, newZoom, {
         animate: true,
         duration: 0.8
@@ -188,11 +190,11 @@ function addGeocodeControl(): void {
   color: white;
   font-weight: 500;
   font-family: $secondary-font;
-  
+
   // Default style for sensor markers
   border-radius: 4px;
   font-size: 12px;
-  
+
   // Specific styles for cluster markers
   &.is-cluster {
     border-radius: 50% !important;
@@ -202,12 +204,17 @@ function addGeocodeControl(): void {
     overflow: hidden;
     transform: translate3d(0,0,0);
     cursor: pointer;
-    
+
     &:hover {
       opacity: 0.9;
       transform: scale(1.05);
       transition: all 0.2s ease;
     }
+  }
+
+  &.is-reference {
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -220,11 +227,11 @@ function addGeocodeControl(): void {
   background: white;
   backdrop-filter: blur(8px);
   min-width: 180px;
-  
+
   &::before {
     display: none;
   }
-  
+
   &::after {
     content: '';
     position: absolute;
