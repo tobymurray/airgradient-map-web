@@ -101,6 +101,17 @@ function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Mar
       permanent: false,
       className: 'ag-marker-tooltip'
     })
+  } else if (!isSensor) {
+    // Add click handler for cluster markers
+    marker.on('click', () => {
+      const currentZoom = mapInstance.getZoom()
+      const newZoom = Math.min(currentZoom + 2, INITIAL_MAP_VIEW_CONFIG.maxZoom)
+      
+      mapInstance.flyTo(latlng, newZoom, {
+        animate: true,
+        duration: 0.8
+      })
+    })
   }
 
   return marker
@@ -190,6 +201,13 @@ function addGeocodeControl(): void {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     transform: translate3d(0,0,0);
+    cursor: pointer;
+    
+    &:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+      transition: all 0.2s ease;
+    }
   }
 }
 
@@ -263,7 +281,6 @@ function addGeocodeControl(): void {
   }
 }
 
-// Ensure the tooltip is above other elements
 .leaflet-tooltip {
   z-index: 1000 !important;
 }
