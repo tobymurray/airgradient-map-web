@@ -1,6 +1,12 @@
 <template>
   <UiProgressBar :show="loading"></UiProgressBar>
   <div id="map">
+    <div class="map-controls">
+      <select v-model="displayType" class="display-type-selector">
+        <option value="pm25">PM2.5 (μg/m³)</option>
+        <option value="aqi">US AQI (PM2.5)</option>
+      </select>
+    </div>
     <LMap
       class="map"
       ref="map"
@@ -17,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import L, { DivIcon, GeoJSON, LatLngBounds, LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import '@maplibre/maplibre-gl-leaflet'
@@ -31,10 +37,12 @@ import { convertToGeoJSON } from '~/utils/'
 import { AGMapData } from '~/types'
 import { getPM25Color } from '~/utils/'
 import { INITIAL_MAP_VIEW_CONFIG } from '~/constants'
+import { pm25ToAQI, getAQIColor } from '~/utils/aqi'
 
 const loading = ref<boolean>(false)
 const map = ref<typeof LMap>()
 const apiUrl = useRuntimeConfig().public.apiUrl
+const displayType = ref<'pm25' | 'aqi'>('pm25')
 
 let mapInstance: L.Map
 let markers: GeoJSON
@@ -64,15 +72,24 @@ function setUpMapInstance(): void {
 }
 
 function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Marker {
-  const measurement: number = feature.properties?.value || 0
-  const backgroundColor: string = getPM25Color(measurement)
+  const pm25Value: number = feature.properties?.value || 0
+  const aqiValue: number = pm25ToAQI(pm25Value)
+  
+  const displayValue = displayType.value === 'pm25' ? pm25Value : aqiValue
+  const backgroundColor = displayType.value === 'pm25' ? 
+    getPM25Color(pm25Value) : 
+    getAQIColor(aqiValue)
+  
   const isSensor: boolean = feature.properties?.type === 'sensor'
   const isReference: boolean = feature.properties?.sensorType === 'Reference'
   
   const markerSize = isSensor ? 24 : 36
 
   const icon: DivIcon = L.divIcon({
-    html: `<div class="ag-marker-cluster${!isSensor ? ' is-cluster' : ''}${isReference ? ' is-reference' : ''}" style="background-color: ${backgroundColor}"><span>${measurement}</span></div>`,
+    html: `<div class="ag-marker-cluster${!isSensor ? ' is-cluster' : ''}${isReference ? ' is-reference' : ''}" 
+             style="background-color: ${backgroundColor}">
+             <span>${Math.round(displayValue)}</span>
+           </div>`,
     className: `marker-cluster-outer ${!isSensor ? 'is-cluster-outer' : ''}`,
     iconSize: L.point(markerSize, markerSize)
   })
@@ -86,8 +103,8 @@ function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Mar
         <div class="tooltip-header">${locationName}</div>
         <div class="tooltip-content">
           <div class="measurement">
-            <span class="value">${measurement}</span>
-            <span class="unit">PM2.5 μg/m³</span>
+            <span class="value">${Math.round(displayValue)}</span>
+            <span class="unit">${displayType.value === 'pm25' ? 'PM2.5 μg/m³' : 'US AQI (PM2.5)'}</span>
           </div>
         </div>
       </div>
@@ -160,6 +177,13 @@ function addGeocodeControl(): void {
 
   mapInstance.addControl(searchControl)
 }
+
+// Watch for display type changes and update markers
+watch(displayType, () => {
+  if (markers) {
+    updateMap()
+  }
+})
 </script>
 
 <style lang="scss">
@@ -183,22 +207,43 @@ function addGeocodeControl(): void {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-weight: 500;
+  font-weight: 600;
   font-family: $secondary-font;
+  box-sizing: border-box;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
   
   // Default style for sensor markers
   border-radius: 4px;
   font-size: 12px;
-  box-sizing: border-box;
+  
+  // Style for markers with yellow background (both PM2.5 and AQI yellows)
+  &[style*="background-color: #ffff00"],
+  &[style*="background-color: rgb(255, 255, 0)"],
+  &[style*="background-color: #e2e020"],
+  &[style*="background-color: rgb(226, 224, 32)"] {
+    color: #2c3e50 !important;
+    text-shadow: none;
+  }
+  
+  // Style for markers with green background (both PM2.5 and AQI greens)
+  &[style*="background-color: #00e400"],
+  &[style*="background-color: rgb(0, 228, 0)"],
+  &[style*="background-color: #1de208"],
+  &[style*="background-color: rgb(29, 226, 8)"] {
+    color: #2c3e50 !important;
+    text-shadow: none;
+  }
   
   // Reference sensor style
   &.is-reference {
     border: 2px solid white;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    font-size: 13px;
   }
   
-  // Specific styles for cluster markers
+  // Cluster markers style
   &.is-cluster {
     border-radius: 50% !important;
     font-size: 14px;
@@ -298,14 +343,20 @@ function addGeocodeControl(): void {
   form {
     padding-left: 30px;
     background-image: url('/assets/images/icons/search.svg');
-    background-position: 5px 5px;
+    background-position: 5px center;
     background-size: 20px;
+    
+    input {
+      height: 36px !important;
+      font-size: 16px !important;
+      padding: 0 12px 0 30px !important;
+    }
   }
 
   .reset {
     color: $dark-grey !important;
-    line-height: 27px !important;
-    font-size: 16px;
+    line-height: 36px !important;
+    font-size: 16px !important;
   }
 }
 
@@ -319,5 +370,58 @@ function addGeocodeControl(): void {
   color: $primary-color;
   border-radius: 4px;
   border-color: transparent;
+}
+
+.map-controls {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  z-index: 999;
+  width: 300px;
+}
+
+.display-type-selector {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  font-family: $secondary-font;
+  font-size: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  background: white;
+  color: rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 32px;
+  
+  &:hover {
+    border-color: rgba(0, 0, 0, 0.3);
+  }
+  
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+}
+
+.leaflet-geosearch-bar {
+  margin-bottom: 8px !important;
+}
+
+.display-type-selector:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #000;
+}
+
+.display-type-selector::-ms-expand {
+  display: none;
 }
 </style>

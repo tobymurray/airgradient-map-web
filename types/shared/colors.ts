@@ -1,4 +1,5 @@
 export enum MapColors {
+    // PM2.5 Colors
     GREEN = 'green',
     YELLOW = 'yellow',
     ORANGE = 'orange',
@@ -8,5 +9,16 @@ export enum MapColors {
     BLUE = 'blue',
     GRAY = 'gray',
     LIGHTGRAY = 'lightgray',
-    DEFAULT = '#7f01e2' 
-  }
+    DEFAULT = 'default',
+    
+    // Text Colors
+    TEXT_DARK = 'text_dark',
+    TEXT_LIGHT = 'text_light',
+    
+    // UI Colors
+    PRIMARY = 'primary',
+    SECONDARY = 'secondary',
+    BORDER = 'border',
+    SHADOW = 'shadow',
+    SHADOW_DARKER = 'shadow_darker'
+}
