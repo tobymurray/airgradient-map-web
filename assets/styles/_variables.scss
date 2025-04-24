@@ -1,26 +1,18 @@
-$primary-font: 'Catamaran', sans-serif;
-$secondary-font: 'Cabin', sans-serif;
-$text-color: #212121;
-$secondary-text-color: #212121;
-$primary-color: #1c75bc;
-$dark-primary-color: #02579a;
-$primary-color-gradient: #49aeff;
-$primary-color-light: #d4ecff;
-$secondary-color: #fc7e10;
-$dark-grey: #7c7c7c;
-
-
 :root {
   --primary-font: 'Catamaran', sans-serif;
   --secondary-font: 'Cabin', sans-serif;
-
   --main-text-color: #212121;
   --main-white-color: #ffffff;
   --main-disabled-color: rgba(0, 0, 0, 0.26);
   --light-disabled-color: rgba(0, 0, 0, 0.12);
 
+  --primary-color: var(--primaryColor500);
+  --dark-primary-color: var(--primaryColor700);
+  --light-primary-color: var(--primaryColor100);
+  --secondary-color: var(--secondaryColor500);
 
-  // PRIMARY COLOR PALETTE
+
+  // EXTENDED PRIMARY COLOR PALETTE
   --primaryColor900: #082338;
   --primaryColor800: #0e3a5e;
   --primaryColor700: #02579a;
@@ -31,7 +23,7 @@ $dark-grey: #7c7c7c;
   --primaryColor200: #a4c7e4;
   --primaryColor100: #d4ecff;
 
-  // SECONDARY COLOR PALETTE
+  // EXTENDED SECONDARY COLOR PALETTE
   --secondaryColor900: #4b2504;
   --secondaryColor800: #7e3f08;
   --secondaryColor700: #b0580b;
@@ -42,7 +34,7 @@ $dark-grey: #7c7c7c;
   --secondaryColor200: #fdcb9f;
   --secondaryColor100: #fee5cf;
 
-  // GRAY COLOR PALETTE
+  // EXTENDED GRAY COLOR PALETTE
   --grayColor900: #313131;
   --grayColor800: #595959;
   --grayColor700: #7c7c7c;
@@ -53,22 +45,33 @@ $dark-grey: #7c7c7c;
   --grayColor200: #e3e3e3;
   --grayColor100: #f1f0f0;
 
-  // CHART COLOR PALETTE
+  // MAP COLOR PALETTE
   --airGreen: #1de208;
   --airYellow: #e2e020;
   --airOrange: #e26a05;
   --airRed: #e20410;
   --airPurple: #7f01e2;
   --airBrown: #903305;
-  --airBlue: #166de2;
-  --airLightsLategray: #778899;
-  --airVeryLightgray: #d5d5d5;
+  --airBlue: #1b75bc;
+  --airGray: #778899;
+  --airLightGray: #d5d5d5;
+  --airDefault: #d5d5d5;
+
+  --airGreenDark: #2b9b20;
+  --airYellowDark: #c7ac1d;
+  --airOrangeDark: #b94f04;
+  --airRedDark: #881218;
+  --airPurpleDark: #521681;
+  --airBrownDark: #54230b;
+  --airBlueDark: #134f7e;
+  --airGrayDark: #4c5660;
+  --airLightGrayDark: #989696;
+  --airDefaultDark: #989696;
 
   // SYSTEM COLOR PALETTE
-  --errorColor: #F24D4D;
-  --errorColorLight: #E57373;
-  --successColor: #4CAF50;
+  --errorColor: #f24d4d;
+  --errorColorLight: #e57373;
+  --successColor: #4caf50;
   --warningColor: #f2b74a;
-  --infoColor: #25C4FE;
-
+  --infoColor: #25c4fe;
 }

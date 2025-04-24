@@ -155,7 +155,7 @@
     }
 
     hr {
-      border-top: 1px solid $primary-color-light !important;
+      border-top: 1px solid var(--light-primary-color) !important;
       width: 100%;
       margin: 39px 0;
     }

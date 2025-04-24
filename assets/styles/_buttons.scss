@@ -8,7 +8,7 @@
   text-decoration: none !important;
   text-align: center;
   font-weight: bold !important;
-  font-family: $secondary-font;
+  font-family: var(--secondary-font);
   font-size: 18px !important;
   display: inline-block;
 }
@@ -19,7 +19,7 @@
   text-align: center;
   font-weight: bold !important;
   line-height: 28px;
-  font-family: $secondary-font;
+  font-family: var(--secondary-font);
   font-size: 14px !important;
   padding: 4px 15px;
   display: inline-block;
@@ -29,14 +29,14 @@
   box-sizing: border-box;
   background-color: transparent;
   transition: 200ms all ease-in-out;
-  border-color: $primary-color;
+  border-color: var(--primary-color);
   border-width: 1px;
   border-style: solid;
-  color: $primary-color !important;
+  color: var(--primary-color) !important;
 
   &:hover,
   &:focus {
-    background-color: $primary-color;
+    background-color: var(--primary-color);
     color: white !important;
   }
 
@@ -53,9 +53,9 @@
 
 .button-orange {
   color: white !important;
-  background-color: $secondary-color;
+  background-color: var(--secondary-color);
   transition: all 200ms ease-in-out;
-  border: 1px solid $secondary-color;
+  border: 1px solid var(--secondary-color);
 
   &:disabled {
     opacity: 50%;
@@ -71,7 +71,7 @@
 
 .button-white {
   background-color: white;
-  color: $primary-color;
+  color: var(--primary-color);
   transition: all 200ms ease-in-out;
 
   &:disabled {
@@ -81,7 +81,7 @@
 
   &:hover,
   &:focus {
-    color: $dark-primary-color;
+    color: var(--dark-primary-color);
   }
 }
 

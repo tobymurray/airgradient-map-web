@@ -3,21 +3,14 @@
   <div id="map">
     <div class="map-controls">
       <select v-model="displayType" class="display-type-selector">
-        <option value="pm25">PM2.5 (μg/m³)</option>
-        <option value="aqi">US AQI (PM2.5)</option>
+        <option :value="MeasureNames.PM25">PM2.5 (μg/m³)</option>
+        <option :value="MeasureNames.PM_AQI">US AQI (PM2.5)</option>
       </select>
     </div>
-    <LMap
-      class="map"
-      ref="map"
-      :maxBoundsViscosity="INITIAL_MAP_VIEW_CONFIG.maxBoundsViscosity"
-      :maxBounds="INITIAL_MAP_VIEW_CONFIG.maxBounds"
-      :zoom="INITIAL_MAP_VIEW_CONFIG.zoom"
-      :max-zoom="INITIAL_MAP_VIEW_CONFIG.maxZoom"
-      :min-zoom="INITIAL_MAP_VIEW_CONFIG.minZoom"
-      :center="INITIAL_MAP_VIEW_CONFIG.center"
-      @ready="onMapReady"
-    >
+    <LMap class="map" ref="map" :maxBoundsViscosity="INITIAL_MAP_VIEW_CONFIG.maxBoundsViscosity"
+      :maxBounds="INITIAL_MAP_VIEW_CONFIG.maxBounds" :zoom="INITIAL_MAP_VIEW_CONFIG.zoom"
+      :max-zoom="INITIAL_MAP_VIEW_CONFIG.maxZoom" :min-zoom="INITIAL_MAP_VIEW_CONFIG.minZoom"
+      :center="INITIAL_MAP_VIEW_CONFIG.center" @ready="onMapReady">
     </LMap>
   </div>
 </template>
@@ -34,16 +27,17 @@ import { useRuntimeConfig } from 'nuxt/app'
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 
 import { convertToGeoJSON } from '~/utils/'
-import { AGMapData } from '~/types'
-import { getPM25Color } from '~/utils/'
+import { AGMapData, MeasureNames, AGMapDataItemType, SensorType } from '~/types'
+import { getPM25Color, getAQIColor } from '~/utils/'
 import { INITIAL_MAP_VIEW_CONFIG } from '~/constants'
-import { pm25ToAQI, getAQIColor } from '~/utils/aqi'
+import { pm25ToAQI } from '~/utils/aqi'
 
 const loading = ref<boolean>(false)
 const map = ref<typeof LMap>()
 const apiUrl = useRuntimeConfig().public.apiUrl
-const displayType = ref<'pm25' | 'aqi'>('pm25')
+const displayType = ref<MeasureNames>(MeasureNames.PM25)
 
+let geoJsonMapData: GeoJsonObject
 let mapInstance: L.Map
 let markers: GeoJSON
 
@@ -74,28 +68,28 @@ function setUpMapInstance(): void {
 function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Marker {
   const pm25Value: number = feature.properties?.value || 0
   const aqiValue: number = pm25ToAQI(pm25Value)
-  
-  const displayValue = displayType.value === 'pm25' ? pm25Value : aqiValue
-  const backgroundColor = displayType.value === 'pm25' ? 
-    getPM25Color(pm25Value) : 
+
+  const displayValue = displayType.value === MeasureNames.PM25 ? pm25Value : aqiValue
+  const colorConfig: { bgColor: string, textColorClass: string } = displayType.value === MeasureNames.PM25 ?
+    getPM25Color(pm25Value) :
     getAQIColor(aqiValue)
-  
-  const isSensor: boolean = feature.properties?.type === 'sensor'
-  const isReference: boolean = feature.properties?.sensorType === 'Reference'
-  
+
+  const isSensor: boolean = feature.properties?.type === AGMapDataItemType.sensor
+  const isReference: boolean = feature.properties?.sensorType === SensorType.reference
+
   const markerSize = isSensor ? 24 : 36
 
   const icon: DivIcon = L.divIcon({
-    html: `<div class="ag-marker-cluster${!isSensor ? ' is-cluster' : ''}${isReference ? ' is-reference' : ''}" 
-             style="background-color: ${backgroundColor}">
+    html: `<div class="ag-marker${!isSensor ? ' is-cluster' : ''}${isReference ? ' is-reference' : ''} ${colorConfig?.textColorClass}" 
+             style="background-color: ${colorConfig?.bgColor}">
              <span>${Math.round(displayValue)}</span>
            </div>`,
-    className: `marker-cluster-outer ${!isSensor ? 'is-cluster-outer' : ''}`,
+    className: `marker-box ${!isSensor ? 'is-cluster-marker-box' : ''}`,
     iconSize: L.point(markerSize, markerSize)
   })
 
   const marker = L.marker(latlng, { icon })
-  
+
   if (isSensor && feature.properties) {
     const locationName: string = feature.properties.locationName || 'Unknown Location'
     const tooltipContent = `
@@ -104,12 +98,12 @@ function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Mar
         <div class="tooltip-content">
           <div class="measurement">
             <span class="value">${Math.round(displayValue)}</span>
-            <span class="unit">${displayType.value === 'pm25' ? 'PM2.5 μg/m³' : 'US AQI (PM2.5)'}</span>
+            <span class="unit">${displayType.value === MeasureNames.PM25 ? 'PM2.5 μg/m³' : 'US AQI (PM2.5)'}</span>
           </div>
         </div>
       </div>
     `
-    
+
     marker.bindTooltip(tooltipContent, {
       direction: 'top',
       offset: L.point(0, -12),
@@ -121,7 +115,7 @@ function createMarker(feature: GeoJSON.Feature, latlng: LatLngExpression): L.Mar
     marker.on('click', () => {
       const currentZoom = mapInstance.getZoom()
       const newZoom = Math.min(currentZoom + 2, INITIAL_MAP_VIEW_CONFIG.maxZoom)
-      
+
       mapInstance.flyTo(latlng, newZoom, {
         animate: true,
         duration: 0.8
@@ -149,13 +143,14 @@ async function updateMap(): Promise<void> {
           xmax: bounds.getNorth(),
           ymax: bounds.getEast(),
           zoom: mapInstance.getZoom(),
-          measure: 'pm25'
+          measure: MeasureNames.PM25
         },
         retry: 1,
       }
     )
 
     const geoJsonData: GeoJsonObject = convertToGeoJSON(response.data)
+    geoJsonMapData = geoJsonData;
     markers.clearLayers()
     markers.addData(geoJsonData)
   } catch (error) {
@@ -178,10 +173,11 @@ function addGeocodeControl(): void {
   mapInstance.addControl(searchControl)
 }
 
-// Watch for display type changes and update markers
+
 watch(displayType, () => {
   if (markers) {
-    updateMap()
+    markers.clearLayers()
+    markers.addData(geoJsonMapData)
   }
 })
 </script>
@@ -191,83 +187,49 @@ watch(displayType, () => {
   height: calc(100vh - 5px);
 }
 
-.marker-cluster-outer {
+.marker-box {
   background: none !important;
   border: none !important;
 }
 
-.marker-cluster-outer.is-cluster-outer {
-  background: none !important;
-  border: none !important;
-}
-
-.ag-marker-cluster {
+.ag-marker {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
+  font-size: 12px;
   justify-content: center;
   font-weight: 600;
-  font-family: $secondary-font;
-  box-sizing: border-box;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  color: #ffffff;
-  
-  // Default style for sensor markers
   border-radius: 4px;
-  font-size: 12px;
-  
-  // Style for markers with yellow background (both PM2.5 and AQI yellows)
-  &[style*="background-color: #ffff00"],
-  &[style*="background-color: rgb(255, 255, 0)"],
-  &[style*="background-color: #e2e020"],
-  &[style*="background-color: rgb(226, 224, 32)"] {
-    color: #2c3e50 !important;
-    text-shadow: none;
-  }
-  
-  // Style for markers with green background (both PM2.5 and AQI greens)
-  &[style*="background-color: #00e400"],
-  &[style*="background-color: rgb(0, 228, 0)"],
-  &[style*="background-color: #1de208"],
-  &[style*="background-color: rgb(29, 226, 8)"] {
-    color: #2c3e50 !important;
-    text-shadow: none;
-  }
-  
-  // Reference sensor style
-  &.is-reference {
-    border: 2px solid white;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    font-size: 13px;
-  }
-  
-  // Cluster markers style
-  &.is-cluster {
-    border-radius: 50% !important;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    transform: translate3d(0,0,0);
-    cursor: pointer;
-    
-    &:hover {
-      opacity: 0.9;
-      transform: scale(1.05);
-      transition: all 0.2s ease;
-    }
+  color: var(--main-white-color);
+}
+
+.is-cluster {
+  border-radius: 50%;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+    transition: all 0.2s ease;
   }
 }
 
+.is-reference {
+  border: 2px solid var(--main-white-color);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
 .ag-marker-tooltip {
-  font-family: $secondary-font;
+  font-family: var(--secondary-font);
   padding: 0;
   border: none;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  background: white;
+  background: var(--main-white-color);
   backdrop-filter: blur(8px);
   min-width: 180px;
 
@@ -283,14 +245,14 @@ watch(displayType, () => {
     transform: translateX(-50%) rotate(45deg);
     width: 12px;
     height: 12px;
-    background: white;
+    background: var(--main-white-color);
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
   }
 
   .marker-tooltip {
     .tooltip-header {
-      background: $primary-color;
-      color: white;
+      background: var(--primary-color);
+      color: var(--main-white-color);
       padding: 8px 12px;
       font-weight: 600;
       font-size: 14px;
@@ -316,13 +278,13 @@ watch(displayType, () => {
         .value {
           font-size: 24px;
           font-weight: 700;
-          color: $text-color;
+          color: var(--main-text-color);
           line-height: 1;
-        }
+        } 
 
         .unit {
           font-size: 12px;
-          color: $dark-grey;
+          color: var(--dark-grey);
           font-weight: 500;
           white-space: nowrap;
         }
@@ -345,7 +307,7 @@ watch(displayType, () => {
     background-image: url('/assets/images/icons/search.svg');
     background-position: 5px center;
     background-size: 20px;
-    
+
     input {
       height: 36px !important;
       font-size: 16px !important;
@@ -354,7 +316,7 @@ watch(displayType, () => {
   }
 
   .reset {
-    color: $dark-grey !important;
+    color: var(--grayColor700)!important;
     line-height: 36px !important;
     font-size: 16px !important;
   }
@@ -365,9 +327,9 @@ watch(displayType, () => {
   margin-left: -25px;
 }
 
-.results > .active,
-.leaflet-control-geosearch .results > :hover {
-  color: $primary-color;
+.results>.active,
+.leaflet-control-geosearch .results> :hover {
+  color: var(--primary-color);
   border-radius: 4px;
   border-color: transparent;
 }
@@ -384,12 +346,12 @@ watch(displayType, () => {
   width: 100%;
   height: 36px;
   padding: 0 12px;
-  font-family: $secondary-font;
+  font-family: var(--secondary-font);
   font-size: 16px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
-  background: white;
-  color: rgba(0, 0, 0, 0.75);
+  background: var(--main-white-color);
+  color: var(--main-text-color);
   cursor: pointer;
   outline: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -401,14 +363,14 @@ watch(displayType, () => {
   background-position: right 8px center;
   background-size: 16px;
   padding-right: 32px;
-  
+
   &:hover {
     border-color: rgba(0, 0, 0, 0.3);
   }
-  
+
   &:focus {
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.1);
   }
 }
 

@@ -1,73 +1,121 @@
-import { CHART_COLORS_DARKENED, COLORS } from '~/constants/shared/colors'
-import { MapColors } from '~/types'
-
+import { CHART_COLORS_CSS_VARS, CHART_COLORS_DARKENED_CSS_VARS } from '~/constants/shared/colors';
+import { ChartColorsType } from '~/types';
 
 /**
  * Gets the color representation for PM2.5 values.
- * 
- * @param {number} pmValue - The PM2.5 value.
- * @param {boolean} [dark=false] - Whether to use dark mode colors.
- * @returns {string} The corresponding color for the PM2.5 value.
+ *
+ * @param {number} pmValue - The PM2.5 value in μg/m³
+ * @param {boolean} [dark=false] - Whether to use dark mode colors
+ * @returns {{ bgColor: string; textColorClass: string }} Object containing background and text colors
+ *   - bgColor: CSS color value for the background
+ *   - textColorClass: CSS color class for the text that ensures readability
  */
-export function getPM25Color(pmValue: number, dark = false): string {
-  let result = MapColors.DEFAULT;
+export function getPM25Color(
+  pmValue: number,
+  dark = false
+): { bgColor: string; textColorClass: string } {
+  let result = ChartColorsType.DEFAULT;
 
   if (pmValue <= 9) {
-    result = MapColors.GREEN;
+    result = ChartColorsType.GREEN;
   } else if (pmValue <= 35.4) {
-    result = MapColors.YELLOW;
+    result = ChartColorsType.YELLOW;
   } else if (pmValue <= 55.4) {
-    result = MapColors.ORANGE;
+    result = ChartColorsType.ORANGE;
   } else if (pmValue <= 125.4) {
-    result = MapColors.RED;
+    result = ChartColorsType.RED;
   } else if (pmValue <= 225.4) {
-    result = MapColors.PURPLE;
+    result = ChartColorsType.PURPLE;
   } else if (pmValue <= 10000) {
-    result = MapColors.BROWN;
+    result = ChartColorsType.BROWN;
   }
 
-  return getBGColor(result, dark);
+  return {
+    bgColor: 
+      dark ? CHART_COLORS_DARKENED_CSS_VARS[result] : CHART_COLORS_CSS_VARS[result]
+    ,
+    textColorClass: getTextColorClassForBG(result, dark)
+  };
 }
 
+/**
+ * Determines the appropriate text color for a given background color type.
+ *
+ * @param {ChartColorsType} bgColor - The background color type from ChartColorsType enum
+ * @param {boolean} [isBGDark=false] - Whether the background is using dark mode colors
+ * @returns {string} CSS class for text that ensures readable contrast
+ * @private
+ */
+function getTextColorClassForBG(bgColor: ChartColorsType, isBGDark: boolean = false): string {
+  return [ChartColorsType.GREEN, ChartColorsType.YELLOW].includes(bgColor) && !isBGDark
+    ? 'text-dark'
+    : 'text-light';
+}
 
 /**
  * Gets the color representation for CO2 values.
- * 
- * @param {number} rco2Value - The CO2 value.
- * @param {boolean} [dark=false] - Whether to use dark mode colors.
- * @returns {string} The corresponding color for the CO2 value.
+ *
+ * @param {number} rco2Value - The CO2 value in ppm (parts per million)
+ * @param {boolean} [dark=false] - Whether to use dark mode colors
+ * @returns {{ bgColor: string; textColor: string }} Object containing background and text colors
+ *   - bgColor: CSS color value for the background
+ *   - textColorClass: CSS color class for the text that ensures readability
  */
-export function getCO2Color(rco2Value, dark = false) {
-  let color = '#7f01e2'
+export function getCO2Color(
+  rco2Value: number,
+  dark = false
+): { bgColor: string; textColorClass: string } {
+  let color = ChartColorsType.DEFAULT;
   const configuration = [
-    { index: 1, color: MapColors.GREEN, max: 449, label: 'Excellent' },
-    { index: 2, color: MapColors.YELLOW, max: 499, label: 'Good' },
-    { index: 3, color: MapColors.ORANGE, max: 799, label: 'Moderate' },
-    { index: 4, color: MapColors.GRAY, max: 10000, label: 'Incorrect' }
-  ]
+    { index: 1, color: ChartColorsType.GREEN, max: 449, label: 'Excellent' },
+    { index: 2, color: ChartColorsType.YELLOW, max: 499, label: 'Good' },
+    { index: 3, color: ChartColorsType.ORANGE, max: 799, label: 'Moderate' },
+    { index: 4, color: ChartColorsType.GRAY, max: 10000, label: 'Incorrect' }
+  ];
 
-  configuration?.sort((a, b) => b.index - a.index)
+  configuration?.sort((a, b) => b.index - a.index);
   configuration?.forEach(configItem => {
     if (rco2Value <= configItem.max) {
-      color = configItem.color
+      color = configItem.color;
     }
-  })
+  });
 
-  return getBGColor(color, dark)
+  return {
+    bgColor: 
+      dark ? CHART_COLORS_DARKENED_CSS_VARS[color] : CHART_COLORS_CSS_VARS[color]
+    ,
+    textColorClass: getTextColorClassForBG(color, dark)
+  };
 }
-
 
 /**
- * Gets the background color based on the provided color and mode.
- * 
- * @param {Color | string} color - The color to use.
- * @param {boolean} [dark=false] - Whether to use dark mode colors.
- * @returns {string} The background color.
+ * Gets the color for AQI value
+ *
+ * @param {number} aqi - US AQI value (0-500 scale)
+ * @returns {{ bgColor: string; textColor: string }} Object containing background and text colors
+ *   - bgColor: CSS color value for the background
+ *   - textColorClass: CSS color class for the text that ensures readability
  */
-export function getBGColor(color, dark = false) {
-  if (!dark) {
-    return COLORS[color] || '#166de2'
+export function getAQIColor(aqi: number): { bgColor: string; textColorClass: string } {
+  let color = ChartColorsType.DEFAULT;
+
+  if (aqi <= 50) {
+    color = ChartColorsType.GREEN;
+  } else if (aqi <= 100) {
+    color = ChartColorsType.YELLOW;
+  } else if (aqi <= 150) {
+    color = ChartColorsType.ORANGE;
+  } else if (aqi <= 200) {
+    color = ChartColorsType.RED;
+  } else if (aqi <= 300) {
+    color = ChartColorsType.PURPLE;
   } else {
-    return CHART_COLORS_DARKENED[color] || '#0e438c'
+    color = ChartColorsType.BROWN;
   }
+
+  return {
+    bgColor: CHART_COLORS_CSS_VARS[color],
+    textColorClass: getTextColorClassForBG(color)
+  };
 }
+

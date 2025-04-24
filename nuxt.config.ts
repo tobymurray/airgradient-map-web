@@ -15,7 +15,6 @@ export default defineNuxtConfig({
     '@/assets/styles/bootstrap.min.css',
     '@/assets/styles/main.scss',
     'leaflet-geosearch/dist/geosearch.css',
-    '@/assets/styles/colors.scss'
   ],
   build: {
     transpile: ['vuetify']
