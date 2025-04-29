@@ -2,6 +2,11 @@
 
 AirGradient Map is a web application for visualizing and analyzing air quality data.
 
+
+⚠️ **Important:** This repository is a more scalable replacement for our current [production app](https://www.airgradient.com/map/). 
+The old app’s tech stack can’t scale to meet our requirements, so we’ve built this new codebase. First, we’ll migrate all existing features here; once that’s done, we’ll layer on new enhancements and capabilities.
+
+
 ## Development Setup
 
 There are two ways to run the application locally: using Docker (recommended) or directly with Node.js.
@@ -124,6 +129,11 @@ ag-map-client/
 ├── Dockerfile     # Production Docker configuration
 └── docker-compose.yml  # Development Docker configuration
 ```
+
+## Branching Model
+
+- `main`: Stable, production-ready code.
+- `development`: Active development branch. Please base your pull requests on `development`.
 
 ## Additional Information
 
