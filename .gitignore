@@ -11,3 +11,4 @@ ios
 android
 .env
 dist
+.DS_Store
