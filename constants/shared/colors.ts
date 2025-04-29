@@ -1,10 +1,8 @@
-
 /**
  * @fileoverview Color constants that correspond to _variables.scss color definitions
  */
 
 import { ChartColorsType } from '~/types/shared/colors';
-
 
 export const CHART_COLORS_CSS_VARS: Record<ChartColorsType, string> = {
   [ChartColorsType.GREEN]: '#1de208',

@@ -1,4 +1,4 @@
-import type { HeaderLink } from '~/types'
+import type { HeaderLink } from '~/types';
 
 export const HEADER_LINKS_CONFIG: HeaderLink[] = [
   {
@@ -41,4 +41,4 @@ export const HEADER_LINKS_CONFIG: HeaderLink[] = [
     path: 'https://www.airgradient.com/shop/',
     openBlank: true
   }
-]
+];

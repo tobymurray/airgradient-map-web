@@ -1,4 +1,4 @@
-import L, { LatLng, LatLngBounds } from 'leaflet'
+import L, { LatLng, LatLngBounds } from 'leaflet';
 
 export const INITIAL_MAP_VIEW_CONFIG = {
   zoom: 3,
@@ -7,4 +7,4 @@ export const INITIAL_MAP_VIEW_CONFIG = {
   center: <L.PointExpression>[47.21322, -1.559482],
   maxBoundsViscosity: 1,
   maxBounds: new LatLngBounds(new LatLng(-88, -230), new LatLng(88, 230))
-}
+};
