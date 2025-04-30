@@ -20,7 +20,7 @@
     "add:android": "test -d ios || npx cap add android",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "format:check": "npx prettier --check \"**/*.{js,ts,vue,json}\""
+    "format:check": "npx prettier --check \"**/*.{js,ts,vue,json}\"",
     "format": "npx prettier --write \"**/*.{js,ts,vue,json}\""
   },
   "engines": {
