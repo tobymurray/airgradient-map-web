@@ -1,4 +1,4 @@
-import type { FooterLinkGroup } from '~/types'
+import type { FooterLinkGroup } from '~/types';
 
 export const FOOTER_LINKS_CONFIG: FooterLinkGroup[] = [
   {
@@ -96,4 +96,4 @@ export const FOOTER_LINKS_CONFIG: FooterLinkGroup[] = [
       }
     ]
   }
-]
+];

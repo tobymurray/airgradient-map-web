@@ -1,7 +1,7 @@
 <template>
   <!-- Internal company Header component - commented out for open source version -->
   <!-- <Header /> -->
-   
+
   <div class="main-content">
     <slot />
   </div>

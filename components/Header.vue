@@ -41,26 +41,22 @@
   </header>
 </template>
 <script setup lang="ts">
-  import { HEADER_LINKS_CONFIG } from '~/constants/shared/header-links-config'
-  import { ref } from 'vue'
+  import { HEADER_LINKS_CONFIG } from '~/constants/shared/header-links-config';
+  import { ref } from 'vue';
 
-  const isNavbarVisible = ref(false)
+  const isNavbarVisible = ref(false);
 
   const toggleNavbar = () => {
-    isNavbarVisible.value = !isNavbarVisible.value
-  }
+    isNavbarVisible.value = !isNavbarVisible.value;
+  };
 </script>
 <style>
-
-#map {
+  #map {
     height: calc(100vh - 129px) !important;
   }
 </style>
 
 <style lang="scss" scoped>
-
-
-
   .native-app.ios header {
     margin-top: 40px;
   }

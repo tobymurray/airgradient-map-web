@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/cli'
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.airgradient.map',
@@ -7,10 +7,8 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: 'https',
     iosScheme: 'https',
-    url: process.env.NODE_ENV === 'production' 
-      ? undefined
-      : 'http://localhost:3000',
+    url: process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:3000',
     cleartext: true
   }
-}
-export default config
+};
+export default config;
