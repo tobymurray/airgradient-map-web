@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, PropType } from 'vue'
+  import { computed, PropType } from 'vue';
 
   const props = defineProps({
     /**
@@ -35,20 +35,20 @@
       type: Boolean,
       default: false
     }
-  })
+  });
 
   const buttonClasses = computed(() => {
-    const sizeClass = props.size === 'large' ? 'btn-large' : 'btn-small'
+    const sizeClass = props.size === 'large' ? 'btn-large' : 'btn-small';
     const colorClass = {
       primary: 'button-orange',
       secondary: 'button-blue',
       'secondary-dark-bg': 'button-white'
-    }[props.kind]
+    }[props.kind];
 
-    return `${sizeClass} ${colorClass}`
-  })
+    return `${sizeClass} ${colorClass}`;
+  });
 
-  const emit = defineEmits(['click'])
+  const emit = defineEmits(['click']);
   /**
    * Handles the button click event.
    * Emits a click event if the button is not disabled.
@@ -56,7 +56,7 @@
    */
   const handleClick = (event: Event) => {
     if (!props.disabled) {
-      emit('click', event)
+      emit('click', event);
     }
-  }
+  };
 </script>

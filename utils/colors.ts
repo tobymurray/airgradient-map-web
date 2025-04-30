@@ -31,9 +31,7 @@ export function getPM25Color(
   }
 
   return {
-    bgColor: 
-      dark ? CHART_COLORS_DARKENED_CSS_VARS[result] : CHART_COLORS_CSS_VARS[result]
-    ,
+    bgColor: dark ? CHART_COLORS_DARKENED_CSS_VARS[result] : CHART_COLORS_CSS_VARS[result],
     textColorClass: getTextColorClassForBG(result, dark)
   };
 }
@@ -81,9 +79,7 @@ export function getCO2Color(
   });
 
   return {
-    bgColor: 
-      dark ? CHART_COLORS_DARKENED_CSS_VARS[color] : CHART_COLORS_CSS_VARS[color]
-    ,
+    bgColor: dark ? CHART_COLORS_DARKENED_CSS_VARS[color] : CHART_COLORS_CSS_VARS[color],
     textColorClass: getTextColorClassForBG(color, dark)
   };
 }
@@ -118,4 +114,3 @@ export function getAQIColor(aqi: number): { bgColor: string; textColorClass: str
     textColorClass: getTextColorClassForBG(color)
   };
 }
-

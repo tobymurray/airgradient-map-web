@@ -1,10 +1,9 @@
-import type { AGMapClusterData, AGMapLocationData } from '~/types'
-import type { FeatureCollection } from 'geojson'
-
+import type { AGMapClusterData, AGMapLocationData } from '~/types';
+import type { FeatureCollection } from 'geojson';
 
 /**
  * Converts an array of AGMapLocationData or AGMapClusterData to a GeoJSON FeatureCollection.
- * 
+ *
  * @param {Array<AGMapLocationData | AGMapClusterData>} data - The array of map location or cluster data to convert.
  * @returns {FeatureCollection} A GeoJSON FeatureCollection representing the input data.
  */
@@ -28,7 +27,7 @@ export function convertToGeoJSON(
           type: 'Point',
           coordinates: [item.latitude, item.longitude]
         }
-      }
+      };
     })
-  }
+  };
 }
