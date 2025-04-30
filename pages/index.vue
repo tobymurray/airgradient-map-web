@@ -4,7 +4,7 @@
   </ClientOnly>
 </template>
 <script lang="ts" setup>
-  import { useHead } from 'nuxt/app'
+  import { useHead } from 'nuxt/app';
 
   useHead({
     title: 'AirGradient Global Air Quality Map',
@@ -33,5 +33,5 @@
         })
       }
     ]
-  })
+  });
 </script>

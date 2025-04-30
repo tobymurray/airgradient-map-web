@@ -98,7 +98,7 @@
   </footer>
 </template>
 <script setup lang="ts">
-  import { FOOTER_LINKS_CONFIG } from '~/constants/shared/footer-links-config'
+  import { FOOTER_LINKS_CONFIG } from '~/constants/shared/footer-links-config';
 </script>
 <style lang="scss" scoped>
   footer {
